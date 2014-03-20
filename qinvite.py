@@ -4,7 +4,7 @@ import weechat
 SCRIPT_NAME    = "qinvite"
 SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org>"
 SCRIPT_VERSION = "0.0.1"
-SCRIPT_LICENSE = "WTFOMGBBQ"
+SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "auto-join on Q invite"
 
 weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION,
