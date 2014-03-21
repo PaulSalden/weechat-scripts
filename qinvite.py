@@ -3,7 +3,7 @@ import weechat
 
 SCRIPT_NAME    = "qinvite"
 SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org>"
-SCRIPT_VERSION = "2.0"
+SCRIPT_VERSION = "2.0.1"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "auto-join on Q invite"
 
@@ -12,10 +12,10 @@ weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION,
 
 _OK = weechat.WEECHAT_RC_OK
 
-queue = {}
-
 def _server_buffer(server):
     return weechat.buffer_search("irc", "server.{}".format(server))
+
+queue = {}
 
 def add_invite(server, channel):
     servbuf = _server_buffer(server)
