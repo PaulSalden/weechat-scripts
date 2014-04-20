@@ -48,7 +48,6 @@ def nextep_response():
 def msg_cb(data, signal, signal_data):
     server = signal.split(",")[0]
     input = weechat.info_get_hashtable("irc_message_parse", { "message": signal_data })
-    if not input["channel"]: return _ok
     message = input["arguments"].split(":", 1)[-1]
 
     if message == "!nextepisode":
