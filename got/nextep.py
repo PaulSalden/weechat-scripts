@@ -17,9 +17,9 @@ EPISODES = [
     (datetime.datetime(2014, 5, 5, 3, 0), "First of His Name"),
     (datetime.datetime(2014, 5, 12, 3, 0), "The Laws of Gods and Men"),
     (datetime.datetime(2014, 5, 19, 3, 0), "Mockingbird"),
-    (datetime.datetime(2014, 6, 2, 3, 0), "Episode #4.8"),
-    (datetime.datetime(2014, 6, 9, 3, 0), "Episode #4.9"),
-    (datetime.datetime(2014, 6, 16, 3, 0), "Episode #4.10"),
+    (datetime.datetime(2014, 6, 2, 3, 0), "The Mountain and the Viper"),
+    (datetime.datetime(2014, 6, 9, 3, 0), "The Watchers on the Wall"),
+    (datetime.datetime(2014, 6, 16, 3, 0), "The Children"),
 ]
 
 def _get_buffer(server, channel):
