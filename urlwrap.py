@@ -8,10 +8,13 @@ SCRIPT_VERSION = "0.9"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "Prevents alignment of multiline messages containing an url."
 
+# This script utilizes filter '_urlwrap_filter'. Do not load if you are somehow
+# manually using it.
+
 weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION,
     SCRIPT_LICENSE, SCRIPT_DESC, "shutdown_cb", "")
 
-weechat.command("", "/filter add urlwrap_filter * urlwrap_filter_tag *")
+weechat.command("", "/filter add _urlwrap_filter * urlwrap_filter_tag *")
 
 def _get_buffer(server, channel):
     return weechat.info_get("irc_buffer", ",".join((server, channel)))
@@ -32,11 +35,15 @@ def _reconstruct_print(string):
         l if l.isdigit() else _c("weechat.color.chat_time_delimiters")+l+_c("weechat.color.chat_time")
         for l in timestamp])
 
-    delimiter = " {} ".format(_c("weechat.color.chat_delimiters") + _s("weechat.look.prefix_suffix") +
-        weechat.color("reset"))
-    string = string.replace("\t", delimiter)
+    nick, message = string.split("\t", 1)
+    nick = "".join((_c("weechat.color.chat_nick_prefix"), _s("weechat.look.nick_prefix"),
+        nick, _c("weechat.color.chat_nick_suffix"), _s("weechat.look.nick_suffix"),
+        weechat.color("reset")))
 
-    return "{} {}".format(timestamp, string)
+    delimiter = "".join((" ", _c("weechat.color.chat_delimiters"), _s("weechat.look.prefix_suffix"),
+        weechat.color("reset"), " ")) if _s("weechat.look.prefix_align") != "none" else " "
+
+    return "{} {}{}{}".format(timestamp, nick, delimiter, message)
 
 def modifier_cb(data, modifier, modifier_data, string):
     if "http://" in string or "https://" in string:
@@ -47,7 +54,7 @@ def modifier_cb(data, modifier, modifier_data, string):
     return string
 
 def shutdown_cb():
-    weechat.command("", "/filter del urlwrap_filter")
+    weechat.command("", "/filter del _urlwrap_filter")
     return weechat.WEECHAT_RC_OK
 
 weechat.hook_modifier("weechat_print", "modifier_cb", "")
