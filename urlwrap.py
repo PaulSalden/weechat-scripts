@@ -47,7 +47,7 @@ def modifier_cb(data, modifier, modifier_data, string):
     return string
 
 def shutdown_cb():
-    weechat.command("", "/del filter urlwrap_filter")
+    weechat.command("", "/filter del urlwrap_filter")
     return weechat.WEECHAT_RC_OK
 
 weechat.hook_modifier("weechat_print", "modifier_cb", "")
