@@ -32,7 +32,7 @@ def _reconstruct_print(string):
         l if l.isdigit() else _c("weechat.color.chat_time_delimiters")+l+_c("weechat.color.chat_time")
         for l in timestamp])
 
-    delimiter = " {} {}".format(_c("weechat.color.chat_delimiters") + _s("weechat.look.prefix_suffix"),
+    delimiter = " {} ".format(_c("weechat.color.chat_delimiters") + _s("weechat.look.prefix_suffix") +
         weechat.color("reset"))
     string = string.replace("\t", delimiter)
 
