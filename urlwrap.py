@@ -4,7 +4,7 @@ from time import strftime
 
 SCRIPT_NAME    = "urlwrap"
 SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org"
-SCRIPT_VERSION = "0.9"
+SCRIPT_VERSION = "0.95"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "Prevents alignment of multiline messages containing an url."
 
@@ -23,11 +23,14 @@ def _s(option):
     # return the string value of option
     return weechat.config_string(weechat.config_get(option))
 
-def _c(option):
-    # return a color character with number based on option
+def _c(option, bgoption=False):
+    # return a color character with numbers based on options
+    if bgoption:
+        return weechat.color(weechat.config_color(weechat.config_get(option)),
+            weechat.config_color(weechat.config_get(bgoption)))
     return weechat.color(weechat.config_color(weechat.config_get(option)))
 
-def _reconstruct_print(string):
+def _reconstruct_print(string, highlighted):
     # as printing without alignment also strips timestamp and delimiter,
     # they must be reconstructed
     timestamp = strftime(_s("weechat.look.buffer_time_format"))
@@ -36,6 +39,9 @@ def _reconstruct_print(string):
         for l in timestamp])
 
     nick, message = string.split("\t", 1)
+    if highlighted:
+        nick = "".join((_c("weechat.color.chat_highlight", "weechat.color.chat_highlight_bg"),
+            nick))
     nick = "".join((_c("weechat.color.chat_nick_prefix"), _s("weechat.look.nick_prefix"),
         nick, _c("weechat.color.chat_nick_suffix"), _s("weechat.look.nick_suffix"),
         weechat.color("reset")))
@@ -46,10 +52,12 @@ def _reconstruct_print(string):
     return "{} {}{}{}".format(timestamp, nick, delimiter, message)
 
 def modifier_cb(data, modifier, modifier_data, string):
-    if "http://" in string or "https://" in string:
+    if "irc_privmsg" in modifier_data and ("http://" in string or "https://" in string):
         buffer = weechat.buffer_search("irc", modifier_data.split(";")[1])
+        nick = weechat.buffer_get_string(buffer, "localvar_nick")
+        highlighted = nick in string
         weechat.prnt_date_tags(buffer, 0, "urlwrap_filter_tag", string)
-        weechat.prnt(buffer, "\t\t{}".format(_reconstruct_print(string)))
+        weechat.prnt(buffer, "\t\t{}".format(_reconstruct_print(string, highlighted)))
         return ""
     return string
 
