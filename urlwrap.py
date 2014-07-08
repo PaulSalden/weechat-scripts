@@ -3,7 +3,7 @@ import weechat
 from time import strftime
 
 SCRIPT_NAME    = "urlwrap"
-SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org"
+SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org>"
 SCRIPT_VERSION = "0.95"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "Prevents alignment of multiline messages containing an url."
@@ -26,8 +26,8 @@ def _s(option):
 def _c(option, bgoption=False):
     # return a color character with numbers based on options
     if bgoption:
-        return weechat.color(weechat.config_color(weechat.config_get(option)),
-            weechat.config_color(weechat.config_get(bgoption)))
+        return weechat.color(",".join((weechat.config_color(weechat.config_get(option)),
+            weechat.config_color(weechat.config_get(bgoption)))))
     return weechat.color(weechat.config_color(weechat.config_get(option)))
 
 def _reconstruct_print(string, highlighted):
@@ -41,7 +41,7 @@ def _reconstruct_print(string, highlighted):
     nick, message = string.split("\t", 1)
     if highlighted:
         nick = "".join((_c("weechat.color.chat_highlight", "weechat.color.chat_highlight_bg"),
-            nick))
+            weechat.string_remove_color(nick, "")))
     nick = "".join((_c("weechat.color.chat_nick_prefix"), _s("weechat.look.nick_prefix"),
         nick, _c("weechat.color.chat_nick_suffix"), _s("weechat.look.nick_suffix"),
         weechat.color("reset")))
