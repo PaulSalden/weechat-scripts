@@ -4,17 +4,23 @@ from time import strftime
 
 SCRIPT_NAME    = "urlwrap"
 SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org>"
-SCRIPT_VERSION = "0.95"
+SCRIPT_VERSION = "0.99"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "Prevents alignment of multiline messages containing an url."
-
-# This script utilizes filter '_urlwrap_filter'. Do not load if you are somehow
-# manually using it.
 
 weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION,
     SCRIPT_LICENSE, SCRIPT_DESC, "shutdown_cb", "")
 
-weechat.command("", "/filter add _urlwrap_filter * urlwrap_filter_tag *")
+infolist = weechat.infolist_get("filter", "", "")
+filters = []
+while weechat.infolist_next(infolist):
+        filters.append(weechat.infolist_string(infolist, "name"))
+weechat.infolist_free(infolist)
+
+filtername = "urlwrap_filter"
+while filtername in filters: filtername = "".join((filtername, "_"))
+
+weechat.command("", "/filter add {} * urlwrap_filter_tag *".format(filtername))
 
 def _get_buffer(server, channel):
     return weechat.info_get("irc_buffer", ",".join((server, channel)))
@@ -70,7 +76,7 @@ def modifier_cb(data, modifier, modifier_data, string):
     return string
 
 def shutdown_cb():
-    weechat.command("", "/filter del _urlwrap_filter")
+    weechat.command("", "/filter del {}".format(filtername))
     return weechat.WEECHAT_RC_OK
 
 weechat.hook_modifier("weechat_print", "modifier_cb", "")
