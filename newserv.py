@@ -19,9 +19,8 @@ def _newserv_match(nick):
 nsbuffer = ""
 def open_newserv_buffer():
     global nsbuffer
-    if not nsbuffer:
-        nsbuffer = weechat.buffer_new("newserv", "newserv_buffer_input_cb", "", "newserv_buffer_close_cb", "")
-        weechat.buffer_set(nsbuffer, "title", "newserv - input will be sent as /msg on {}!".format(NETWORK))
+    nsbuffer = weechat.buffer_new("newserv", "newserv_buffer_input_cb", "", "newserv_buffer_close_cb", "")
+    weechat.buffer_set(nsbuffer, "title", "newserv - input will be sent as /msg on {}!".format(NETWORK))
 
 serverbuffer = weechat.buffer_search("irc", "server.{}".format(NETWORK))
 def newserv_buffer_input_cb(data, buffer, input_data):
