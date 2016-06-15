@@ -17,7 +17,7 @@ NETWORK = "quakenet"
 SERVICES = ["N", "N4"]
 PATTERNS = ["\$c\$", "\$r\$ Azubu"]
 BUFFERNAME = "newspam" # empty to hide spam entirely
-LOG = False
+NOLOG = True
 RELAYHIDE = True
 
 spambuffer = ""
@@ -26,6 +26,9 @@ def open_spambuffer():
     if not spambuffer:
         spambuffer = weechat.buffer_new(BUFFERNAME, "", "", "spambuffer_close_cb", "")
         weechat.buffer_set(spambuffer, "title", "newserv spam buffer")
+
+        if NOLOG:
+            weechat.buffer_set(spambuffer, "localvar_set_no_log", "1")
 
         if RELAYHIDE:
             weechat.buffer_set(spambuffer, "localvar_set_relay", "hard-hide")
@@ -51,11 +54,7 @@ def modifier_cb(data, modifier, modifier_data, string):
 
         ncolor = weechat.info_get("irc_nick_color_name", input["nick"])
         printtext = "{}{}{}\t{}".format(weechat.color(ncolor), input["nick"], weechat.color("reset"), input["text"])
-
-        if LOG:
-            weechat.prnt(spambuffer, printtext)
-        else:
-            weechat.command(spambuffer, "/print -tags no_log {}".format(printtext))
+        weechat.prnt(spambuffer, printtext)
     
     return ""
 
