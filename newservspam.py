@@ -33,7 +33,7 @@ def open_spambuffer():
         if RELAYHIDE:
             weechat.buffer_set(spambuffer, "localvar_set_relay", "hard-hide")
 
-def newserv_buffer_close_cb(data, buffer):
+def spambuffer_close_cb(data, buffer):
     global spambuffer
     spambuffer = ""
     return weechat.WEECHAT_RC_OK
