@@ -20,6 +20,10 @@ BUFFERNAME = "newspam" # empty to hide spam entirely
 NOLOG = True
 RELAYHIDE = True
 
+# to disable notification of spam in hotlist and bufferlist, use:
+#   /set weechat.notify.python.<buffername> none
+# (/save makes configuration changes persist)
+
 spambuffer = ""
 def open_spambuffer():
     global spambuffer
