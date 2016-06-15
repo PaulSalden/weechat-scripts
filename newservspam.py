@@ -15,7 +15,7 @@ NETWORK = "quakenet"
 
 # adjust to preference
 SERVICES = ["N", "N4"]
-PATTERNS = ["\$c\$", "\$r\$ Azubu"]
+PATTERNS = ["\$c\$", "\$t\$ Azubu"]
 BUFFERNAME = "newspam" # empty to hide spam entirely
 NOLOG = True
 RELAYHIDE = True
