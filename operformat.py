@@ -30,7 +30,10 @@ SERVERPATTERNS = [
         nc("KILL")+"KILL"+c("reset")+"\t{0} ({1}) ("+c("irc.color.reason_quit")+"{2}"+c("reset")+")"),
 
     ("^[^ ]+ \*\*\* Notice -- G-line active for (.*)\[(.*)@(.+)\]$",
-        nc("G:ACTIVE")+"G:ACTIVE"+c("reset")+"\t{0}!{1}@{2}")
+        nc("G:ACTIVE")+"G:ACTIVE"+c("reset")+"\t{0}!{1}@{2}"),
+
+    ("^[^ ]+ \*\*\* Notice -- SETTIME from ([^ ]+), clock is set (.+)$",
+        nc("SETTIME")+"SETTIME"+c("reset")+"\t{1} ({0})")
 ]
 
 def modifier_cb(data, modifier, modifier_data, string):
