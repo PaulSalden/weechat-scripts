@@ -27,7 +27,7 @@ SERVERPATTERNS = [
         nc("GLINE")+"GLINE"+c("reset")+"\t{1} ({0}) {2} ("+c("irc.color.reason_quit")+"{3}"+c("reset")+")"),
 
     ("^[^ ]+ \*\*\* Notice -- Received KILL message for ([^ ]+)\. From ([^ ]+) Path: [^ ]+ \((.+)\)$",
-        nc("KILL")+"KILL"+c("reset")+"\t{0} ({1}) ("+c("irc.color.reason_quit")+"{3}"+c("reset")+")"),
+        nc("KILL")+"KILL"+c("reset")+"\t{0} ({1}) ("+c("irc.color.reason_quit")+"{2}"+c("reset")+")"),
 
     ("^[^ ]+ \*\*\* Notice -- G-line active for (.*)\[(.*)@(.+)\]$",
         nc("G:ACTIVE")+"G:ACTIVE"+c("reset")+"\t{0}!{1}@{2}")
