@@ -40,6 +40,7 @@ def connected_cb(data, signal, signal_data):
         if username and password:
             nick = weechat.info_get("irc_nick", QUAKENET)
             authwait = True
+            # /mode does not support -server
             weechat.command("", "/quote -server {} mode {} +x".format(QUAKENET, nick))
             weechat.command("", "/quote -server {} auth {} {}".format(QUAKENET, username, password))
     return weechat.WEECHAT_RC_OK
