@@ -28,7 +28,9 @@ for option, desc in OPTIONS.iteritems():
 def _get_script_option(option):
     return weechat.config_string(weechat.config_get("plugins.var.python.{}.{}".format(SCRIPT_NAME, option)))
 
+# make sure channels are not joined after /sethost
 authwait = False
+
 def connected_cb(data, signal, signal_data):
     global authwait
     if signal_data == QUAKENET:
@@ -47,7 +49,7 @@ def hidden_host_cb(data, signal, signal_data):
     if authwait:
         authwait = False
         channels = _get_script_option("channels")
-        
+
         if channels:
             weechat.command("", "/join -server {} {}".format(QUAKENET, channels))
     return weechat.WEECHAT_RC_OK
