@@ -5,7 +5,7 @@ SCRIPT_NAME    = "qauth"
 SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org>"
 SCRIPT_VERSION = "1.0"
 SCRIPT_LICENSE = "GPL3"
-SCRIPT_DESC    = "auth with Q, obtain a fake host and join channels"
+SCRIPT_DESC    = "auth with Q, obtain a hidden host and join channels"
 
 weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION,
     SCRIPT_LICENSE, SCRIPT_DESC, "", "")
