@@ -37,7 +37,6 @@ def _irc_lower(string):
 
     return string
 
-
 # from https://www.quakenet.org/development/challengeauth
 def challengeauth(lcusername, truncpassword, challenge, digest=hashlib.sha256):
     return hmac.HMAC(digest("{}:{}".format(lcusername, digest(truncpassword).hexdigest())).hexdigest(),
