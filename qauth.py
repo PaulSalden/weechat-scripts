@@ -28,6 +28,7 @@ for option, desc in OPTIONS.iteritems():
 def _get_script_option(option):
     return weechat.config_string(weechat.config_get("plugins.var.python.{}.{}".format(SCRIPT_NAME, option)))
 
+# based on http://script.quakenet.org/wiki/ChallengeAuth
 def _irc_lower(string):
     string = string.lower()
 
