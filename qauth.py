@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import weechat
+import weechat, hmac, hashlib
 
 SCRIPT_NAME    = "qauth"
 SCRIPT_AUTHOR  = "Paul Salden <voronoi@quakenet.org>"
-SCRIPT_VERSION = "1.0"
+SCRIPT_VERSION = "1.5"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "auth with Q, obtain a hidden host and join channels"
 
@@ -28,6 +28,21 @@ for option, desc in OPTIONS.iteritems():
 def _get_script_option(option):
     return weechat.config_string(weechat.config_get("plugins.var.python.{}.{}".format(SCRIPT_NAME, option)))
 
+def _irc_lower(string):
+    string = string.lower()
+
+    SYMREP = {"[": "{", "]": "}", "\\": "|", "^": "~"}
+    for char, rep in SYMREP.iteritems():
+        string = string.replace(char, rep)
+
+    return string
+
+
+# from https://www.quakenet.org/development/challengeauth
+def challengeauth(lcusername, truncpassword, challenge, digest=hashlib.sha256):
+    return hmac.HMAC(digest("{}:{}".format(lcusername, digest(truncpassword).hexdigest())).hexdigest(),
+        challenge, digestmod=digest).hexdigest()
+
 # make sure channels are not joined after /sethost
 authwait = False
 
@@ -42,7 +57,22 @@ def connected_cb(data, signal, signal_data):
             authwait = True
             # /mode does not support -server
             weechat.command("", "/quote -server {} mode {} +x".format(QUAKENET, nick))
-            weechat.command("", "/quote -server {} auth {} {}".format(QUAKENET, username, password))
+            weechat.command("", "/msg -server {} q@cserve.quakenet.org CHALLENGE".format(QUAKENET))
+    return weechat.WEECHAT_RC_OK
+
+def notice_cb(data, signal, signal_data):
+    input = weechat.info_get_hashtable("irc_message_parse", {"message": signal_data})
+    if input["nick"] == "Q":
+        words = input["text"].split()
+
+        if words[0] == "CHALLENGE" and "HMAC-SHA-256" in words[2:]:
+            username = _get_script_option("username")
+            lcusername = _irc_lower(username)
+            truncpassword = _get_script_option("password")[:10]
+            response = challengeauth(lcusername, truncpassword, words[1])
+
+            template = "/msg -server {} q@cserve.quakenet.org CHALLENGEAUTH {} {} HMAC-SHA-256"
+            weechat.command("", template.format(QUAKENET, username, response))
     return weechat.WEECHAT_RC_OK
 
 def hidden_host_cb(data, signal, signal_data):
@@ -56,4 +86,5 @@ def hidden_host_cb(data, signal, signal_data):
     return weechat.WEECHAT_RC_OK
 
 weechat.hook_signal("irc_server_connected", "connected_cb", "")
+weechat.hook_signal("{},irc_in_notice".format(QUAKENET), "notice_cb", "")
 weechat.hook_signal("{},irc_in_396".format(QUAKENET), "hidden_host_cb", "")
