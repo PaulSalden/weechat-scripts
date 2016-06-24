@@ -61,18 +61,20 @@ def connected_cb(data, signal, signal_data):
     return weechat.WEECHAT_RC_OK
 
 def notice_cb(data, signal, signal_data):
-    input = weechat.info_get_hashtable("irc_message_parse", {"message": signal_data})
-    if input["nick"] == "Q":
-        words = input["text"].split()
+    if authwait:
+        input = weechat.info_get_hashtable("irc_message_parse", {"message": signal_data})
+        
+        if input["nick"] == "Q":
+            words = input["text"].split()
 
-        if words[0] == "CHALLENGE" and "HMAC-SHA-256" in words[2:]:
-            username = _get_script_option("username")
-            lcusername = _irc_lower(username)
-            truncpassword = _get_script_option("password")[:10]
-            response = challengeauth(lcusername, truncpassword, words[1])
+            if words[0] == "CHALLENGE" and "HMAC-SHA-256" in words[2:]:
+                username = _get_script_option("username")
+                lcusername = _irc_lower(username)
+                truncpassword = _get_script_option("password")[:10]
+                response = challengeauth(lcusername, truncpassword, words[1])
 
-            template = "/msg -server {} q@cserve.quakenet.org CHALLENGEAUTH {} {} HMAC-SHA-256"
-            weechat.command("", template.format(QUAKENET, username, response))
+                template = "/msg -server {} q@cserve.quakenet.org CHALLENGEAUTH {} {} HMAC-SHA-256"
+                weechat.command("", template.format(QUAKENET, username, response))
     return weechat.WEECHAT_RC_OK
 
 def hidden_host_cb(data, signal, signal_data):
