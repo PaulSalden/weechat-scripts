@@ -63,7 +63,7 @@ def connected_cb(data, signal, signal_data):
 def notice_cb(data, signal, signal_data):
     if authwait:
         input = weechat.info_get_hashtable("irc_message_parse", {"message": signal_data})
-        
+
         if input["nick"] == "Q":
             words = input["text"].split()
 
@@ -87,6 +87,13 @@ def hidden_host_cb(data, signal, signal_data):
             weechat.command("", "/join -server {} {}".format(QUAKENET, channels))
     return weechat.WEECHAT_RC_OK
 
+# prevent (automatic) joins while the authentication process is ongoing
+def join_modifier_cb(data, modifier, modifier_data, string):
+    if authwait and modifier_data == QUAKENET:
+        return ""
+    return string
+
 weechat.hook_signal("irc_server_connected", "connected_cb", "")
 weechat.hook_signal("{},irc_in_notice".format(QUAKENET), "notice_cb", "")
 weechat.hook_signal("{},irc_in_396".format(QUAKENET), "hidden_host_cb", "")
+weechat.hook_modifier("irc_out_join", "join_modifier_cb", "")
