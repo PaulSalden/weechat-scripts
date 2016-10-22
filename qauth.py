@@ -103,6 +103,7 @@ def join_modifier_cb(data, modifier, modifier_data, string):
 # retry auth until it succeeds
 def timer_cb(data, remaining_calls):
     weechat.command("", "/msg -server {} q@cserve.quakenet.org CHALLENGE".format(QUAKENET))
+    return weechat.WEECHAT_RC_OK
 
 weechat.hook_signal("irc_server_connected", "connected_cb", "")
 weechat.hook_signal("{},irc_in_notice".format(QUAKENET), "notice_cb", "")
