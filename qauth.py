@@ -20,6 +20,9 @@ OPTIONS = {
     "channels": "channels to join; see \"/help irc.server.{}.autojoin\" for format".format(QUAKENET)
 }
 
+# pause between auth attempts in milliseconds
+DELAY = 5 * 60 * 1000
+
 for option, desc in OPTIONS.iteritems():
     if not weechat.config_is_set_plugin(option):
         weechat.config_set_plugin(option, "")
@@ -45,9 +48,10 @@ def challengeauth(lcusername, truncpassword, challenge, digest=hashlib.sha256):
 
 # make sure channels are not joined after /sethost
 authwait = False
+timer = ""
 
 def connected_cb(data, signal, signal_data):
-    global authwait
+    global authwait, timer
     if signal_data == QUAKENET:
         username = _get_script_option("username")
         password = _get_script_option("password")
@@ -55,6 +59,7 @@ def connected_cb(data, signal, signal_data):
         if username and password:
             nick = weechat.info_get("irc_nick", QUAKENET)
             authwait = True
+            timer = weechat.hook_timer(DELAY, 0, 0, "timer_cb", "")
             # /mode does not support -server
             weechat.command("", "/quote -server {} mode {} +x".format(QUAKENET, nick))
             weechat.command("", "/msg -server {} q@cserve.quakenet.org CHALLENGE".format(QUAKENET))
@@ -78,9 +83,11 @@ def notice_cb(data, signal, signal_data):
     return weechat.WEECHAT_RC_OK
 
 def hidden_host_cb(data, signal, signal_data):
-    global authwait
+    global authwait, timer
     if authwait:
         authwait = False
+        weechat.unhook(timer)
+        timer = ""
         channels = _get_script_option("channels")
 
         if channels:
@@ -92,6 +99,10 @@ def join_modifier_cb(data, modifier, modifier_data, string):
     if authwait and modifier_data == QUAKENET:
         return ""
     return string
+
+# retry auth until it succeeds
+def timer_cb(data, remaining_calls):
+    weechat.command("", "/msg -server {} q@cserve.quakenet.org CHALLENGE".format(QUAKENET))
 
 weechat.hook_signal("irc_server_connected", "connected_cb", "")
 weechat.hook_signal("{},irc_in_notice".format(QUAKENET), "notice_cb", "")
